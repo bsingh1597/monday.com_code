@@ -7,7 +7,7 @@ import Constants
 
 
 BOARD_ID = '7198467067'
-DROPDOWN_COLUMN_ID = 'dropdown__1'  # Replace with your dropdown column ID
+DROPDOWN_COLUMN_ID = 'dropdown1__1'  # Replace with your dropdown column ID
 
 headers = {
     "Authorization": cred.API_TOKEN,
@@ -37,14 +37,6 @@ column_data = data['data']['boards'][0]['columns'][0]
 
 # Extract the dropdown options from the settings_str field
 dropdown_options = json.loads(column_data['settings_str'])
-
-print(f"{dropdown_options}")
-
-# Print out the options and their IDs
-# for dict in dropdown_options['labels']:
-#     for id, name in dict.items():
-#             print(f"ID: {name}")
-#     print("")
         
 csv_file = "../counties.csv"
 with open(csv_file, mode='w',newline='') as file:
