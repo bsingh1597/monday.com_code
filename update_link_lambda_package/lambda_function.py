@@ -1,6 +1,6 @@
 import json
 import httpx
-from update_link_column import update_link_column
+from update_link_column import update_link_column, fecth_workspace_id_from_board
 
 import cred
 import Constants
@@ -14,7 +14,7 @@ def lambda_handler(event, context):
     board_name_to_find = webhook_payload["pulseName"]
     portfolio_item_id = webhook_payload["pulseId"]
     # *****Current workspace - no in Event
-    workspace_id = 7582973
+    workspace_id = fecth_workspace_id_from_board(board_id=webhook_payload["boardId"])
     portfolio_board_id = webhook_payload["boardId"]
         
     # Headers including the API token

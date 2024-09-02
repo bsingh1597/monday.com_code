@@ -60,7 +60,7 @@ def retieve_column_id(board_id, column_name):
 
     # Send the request to Monday.com API
     response = httpx.post(Constants.URL, json={'query': retrieve_columns_query}, headers=headers)
-
+    column_id = None
     # Check if the request was successful
     if response.status_code == 200:
         data = response.json()
@@ -69,14 +69,35 @@ def retieve_column_id(board_id, column_name):
         columns = data['data']['boards'][0]['columns']
         
         # Find the column ID based on the column name
-        column_id = None
         for column in columns:
             if column['title'] == column_name:
                 column_id = column['id']
                 break
         
         print(f"Column ID: {column_id}")
-        return column_id
     else:
         print(f"Failed to retrieve columns: {response.status_code} {response.text}")
-        return None
+    return column_id
+    
+def fecth_workspace_id_from_board(board_id):
+    # GraphQL query to get the workspace ID from the board
+    query = """
+    { boards(ids: %s) {
+        workspace {
+        id
+        name
+        }
+    }
+    }""" % board_id
+    workspace_id = None
+    
+    response = httpx.post(Constants.URL, json={'query': query}, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        workspace_id = data['data']['boards'][0]['workspace']['id']
+        print(f"Workspace ID: {workspace_id}")
+    else:
+        print(f"Failed to fetch workspace ID: {response.status_code} {response.text}")
+
+    return workspace_id
