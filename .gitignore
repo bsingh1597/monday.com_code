@@ -2,7 +2,7 @@ cred.py
 __pycache__/Constants.cpython-312.pyc
 *.pyc
 *.zip
-update_link_lambda_package/*
-!update_link_lambda_package/lambda_function.py
-!update_link_lambda_package/Constants.py
-!update_link_lambda_package/update_link_column.py
+archway_lambda_package/*
+!archway_lambda_package/lambda_function.py
+!archway_lambda_package/Constants.py
+!archway_lambda_package/update_link_column.py
