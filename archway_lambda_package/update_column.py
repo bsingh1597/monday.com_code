@@ -10,15 +10,16 @@ headers = {
     'Content-Type': 'application/json'
 }
 
-def update_link_column(board_id, item_id, column_name, value, project_name):
-    print(value)
+def update_column(board_id, item_id, column_name, value, project_name="", is_link=False):
+    # print(f"Column Value: {value}")
     # IDs for the board, item, and column
     column_id = retieve_column_id(board_id, column_name)
 
-    link_value = json.dumps({
-    "url": value,
-    "text": project_name
-    }).replace('"', '\\"')
+    if is_link:
+        value = json.dumps({
+        "url": value,
+        "text": project_name
+        }).replace('"', '\\"')
 
     # GraphQL mutation to update the column value
     mutation = """
@@ -32,7 +33,7 @@ def update_link_column(board_id, item_id, column_name, value, project_name):
         id
         }
     }
-    """ % (board_id, item_id, column_id, link_value)
+    """ % (board_id, item_id, column_id, value)
 
     # Send the request to Monday.com API
     response = httpx.post(Constants.URL, json={'query': mutation}, headers=headers)
@@ -101,3 +102,38 @@ def fecth_workspace_id_from_board(board_id):
         print(f"Failed to fetch workspace ID: {response.status_code} {response.text}")
 
     return workspace_id
+
+def fecth_board_id_by_name(board_name, workspace_id):
+    board = None
+    # GraphQL query to find boards by name
+    query = """
+    {
+      boards (workspace_ids: [%s]) {
+        id
+        name
+        url
+      }
+    }
+    """ % workspace_id
+    
+    # Fecth the boards information in the workspace
+    response = httpx.post(Constants.URL, json={'query': query}, headers=headers)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        data = response.json()
+        # Extract boards data
+        # print(data)
+        boards = data['data']['boards']
+    
+        # Filter boards by the desired name
+        matching_boards = [board for board in boards if board['name'] == board_name]
+        
+        if matching_boards:
+           board = matching_boards[0]
+            #for board in matching_boards:
+           print(f"Found board: {board['name']} (ID: {board['id']}) and URL: {board['url']}")
+    else:
+        print(f"Failed to fetch boards: {response.status_code} {response.text}")
+        
+    return board
