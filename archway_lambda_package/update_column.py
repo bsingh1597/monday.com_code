@@ -13,13 +13,17 @@ headers = {
 def update_column(board_id, item_id, column_name, value, project_name="", is_link=False):
     # print(f"Column Value: {value}")
     # IDs for the board, item, and column
-    column_id = retieve_column_id(board_id, column_name)
+    column_id, column_type = retieve_column_info(board_id, column_name)
 
     if is_link:
         value = json.dumps({
         "url": value,
         "text": project_name
         }).replace('"', '\\"')
+    
+    match column_type:
+        case 'text':
+           value = f'"{value}"'.replace('"', '\\"')
 
     # GraphQL mutation to update the column value
     mutation = """
@@ -46,7 +50,7 @@ def update_column(board_id, item_id, column_name, value, project_name="", is_lin
     else:
         print(f"Failed to update column: {response.status_code} {response.text}")
 
-def retieve_column_id(board_id, column_name):
+def retieve_column_info(board_id, column_name):
     # GraphQL query to get columns for the specified board
     retrieve_columns_query = """
     {
@@ -54,6 +58,7 @@ def retieve_column_id(board_id, column_name):
         columns {
         id
         title
+        type
         }
     }
     }
@@ -73,12 +78,13 @@ def retieve_column_id(board_id, column_name):
         for column in columns:
             if column['title'] == column_name:
                 column_id = column['id']
+                column_type = column['type']
                 break
         
         print(f"Column ID: {column_id}")
     else:
         print(f"Failed to retrieve columns: {response.status_code} {response.text}")
-    return column_id
+    return column_id, column_type
     
 def fecth_workspace_id_from_board(board_id):
     # GraphQL query to get the workspace ID from the board
