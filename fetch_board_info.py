@@ -5,7 +5,7 @@ import Constants
 
 
 # Board ID for which you want to get the workspace ID
-board_id = 7340225471
+board_id = 8918391890
 
 # Headers including the API token
 headers = {
